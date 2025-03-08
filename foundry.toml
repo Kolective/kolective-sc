@@ -3,4 +3,9 @@ src = "src"
 out = "out"
 libs = ["lib"]
 
-# See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
+[rpc_endpoints]
+sonic_blaze = "${SONIC_TESTNET_RPC}"
+
+[etherscan]
+sonic_blaze = { key = "${SONIC_API_KEY}", url = "https://api-testnet.sonicscan.org/api" }
+57054 = { key = "TXRJTQHCG7UX8E16ZMT4QDNVU987FWARAX", url = "https://api-testnet.sonicscan.org/api" }

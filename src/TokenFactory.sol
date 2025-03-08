@@ -1,47 +1,20 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import {ERC20} from "openzeppelin-contracts/contracts/token/ERC20/ERC20.sol";
-import {Ownable} from "openzeppelin-contracts/contracts/access/Ownable.sol";
+import {MockToken} from "./MockToken.sol";
 
-contract MockToken is ERC20, Ownable {
-    uint256 public price; // Harga token dalam wei (1 token = X wei)
-    uint256 public marketCap; // Kapitalisasi pasar dalam wei
-    uint256 public liquidity; // Likuiditas dalam wei
+contract TokenFactory {
+    event TokenCreated(address indexed tokenAddress, string name, string symbol, uint256 initialSupply, uint8 decimals, uint256 initialPrice, address owner);
 
-    event PriceUpdated(uint256 newPrice);
-    event MarketCapUpdated(uint256 newMarketCap);
-    event LiquidityUpdated(uint256 newLiquidity);
-
-    constructor(
-        string memory name,
-        string memory symbol,
+    function createToken(
+        string memory name, 
+        string memory symbol, 
         uint256 initialSupply,
-        address owner
-    ) ERC20(name, symbol) Ownable(owner) {
-        _mint(owner, initialSupply * 10 ** decimals());
-        price = 1 ether; // Default 1 token = 1 ETH (mock)
-        marketCap = totalSupply() * price;
-        liquidity = totalSupply() / 2;
-    }
-
-    function setPrice(uint256 newPrice) external onlyOwner {
-        price = newPrice;
-        marketCap = totalSupply() * newPrice;
-        emit PriceUpdated(newPrice);
-    }
-
-    function setMarketCap(uint256 newMarketCap) external onlyOwner {
-        marketCap = newMarketCap;
-        emit MarketCapUpdated(newMarketCap);
-    }
-
-    function setLiquidity(uint256 newLiquidity) external onlyOwner {
-        liquidity = newLiquidity;
-        emit LiquidityUpdated(newLiquidity);
-    }
-
-    function getTokenValue(uint256 amount) external view returns (uint256) {
-        return amount * price;
+        uint8 decimals,
+        uint256 initialPrice
+    ) external returns (address) {
+        MockToken token = new MockToken(name, symbol, initialSupply, decimals, initialPrice, msg.sender);
+        emit TokenCreated(address(token), name, symbol, initialSupply, decimals, initialPrice, msg.sender);
+        return address(token);
     }
 }
