@@ -1,4 +1,4 @@
-# SONIC Token Deployment
+# Kolective Smart Contract
 
 This project deploys a set of mock tokens, a token factory, and a core smart contract for handling token swaps and liquidity, using Foundry.
 
