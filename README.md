@@ -1,66 +1,78 @@
-## Foundry
+# SONIC Token Deployment
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+This project deploys a set of mock tokens, a token factory, and a core smart contract for handling token swaps and liquidity, using Foundry.
 
-Foundry consists of:
+## Prerequisites
 
--   **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
--   **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
--   **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
--   **Chisel**: Fast, utilitarian, and verbose solidity REPL.
-
-## Documentation
-
-https://book.getfoundry.sh/
-
-## Usage
-
-### Build
-
-```shell
-$ forge build
+Ensure you have Foundry installed. If not, install it using:
+```sh
+curl -L https://foundry.paradigm.xyz | bash
+foundryup
 ```
 
-### Test
-
-```shell
-$ forge test
+### Environment Variables
+Create a `.env` file and add the following variables:
+```sh
+SONIC_API_KEY=
+SONIC_TESTNET_RPC=
+ETHERSCAN_API_KEY=
+PRIVATE_KEY=
 ```
 
-### Format
-
-```shell
-$ forge fmt
+## Installation
+Clone the repository and install dependencies:
+```sh
+git clone https://github.com/Kolective/kolective-sc
+cd kolective-sc
+forge install
 ```
 
-### Gas Snapshots
+## Contracts Overview
 
-```shell
-$ forge snapshot
+### **1. Deploy Script (`Deploy.sol`)**
+- Deploys `TokenFactory` for creating ERC-20 tokens.
+- Deploys `Core` contract for handling liquidity and swaps.
+- Creates multiple tokens (SONIC, ETH, BTC, etc.) with predefined prices and liquidity.
+- Adds liquidity to the `Core` contract.
+
+### **2. Core Contract (`Core.sol`)**
+- Manages liquidity and token prices.
+- Allows adding and removing liquidity.
+- Implements a swap function with a 0.3% fee.
+- Emits events for liquidity changes and swaps.
+
+### **3. MockToken Contract (`MockToken.sol`)**
+- ERC-20 token implementation.
+- Allows minting and price setting.
+- Used for testing token deployment and swaps.
+
+### **4. TokenFactory Contract (`TokenFactory.sol`)**
+- Factory contract for creating new ERC-20 tokens.
+- Allows users to deploy custom tokens with specified parameters.
+
+## Deployment
+To deploy the contracts, use:
+```sh
+forge script script/Deploy.s.sol:Deploy \
+  --rpc-url https://rpc.blaze.soniclabs.com \
+  --private-key $PRIVATE_KEY \
+  --broadcast --verify \
+  --etherscan-api-key $ETHERSCAN_API_KEY \
+  --verifier blockscout \
+  --verifier-url https://api-testnet.sonicscan.org/api \
+  --via-ir
 ```
 
-### Anvil
-
-```shell
-$ anvil
+## Testing
+Run tests using:
+```sh
+forge test
 ```
 
-### Deploy
+## Improvements & Security Considerations
+- Restrict `setPriceAndLiquidity` to only the contract owner.
+- Improve swap fee calculations for accuracy.
+- Optimize storage by using `uint128` instead of `uint256` for token prices.
 
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
-```
-
-### Cast
-
-```shell
-$ cast <subcommand>
-```
-
-### Help
-
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
-```
+## License
+This project is licensed under the MIT License.
